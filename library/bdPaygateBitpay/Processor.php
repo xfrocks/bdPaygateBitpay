@@ -42,6 +42,14 @@ class bdPaygateBitpay_Processor extends bdPaygate_Processor_Abstract
 	
 	public function validateCallback(Zend_Controller_Request_Http $request, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId)
 	{
+		$amount = false;
+		$currency = false;
+
+		return $this->validateCallback2($request, $transactionId, $paymentStatus, $transactionDetails, $itemId, $amount, $currency);
+	}
+
+	public function validateCallback2(Zend_Controller_Request_Http $request, &$transactionId, &$paymentStatus, &$transactionDetails, &$itemId, &$amount, &$currency)
+	{
 		$rawData = file_get_contents("php://input");
 		if (empty($rawData))
 		{
@@ -73,6 +81,8 @@ class bdPaygateBitpay_Processor extends bdPaygate_Processor_Abstract
 		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_OTHER;
 		$transactionDetails = array_merge(array('rawData' => $data), $invoice);
 		$itemId = !empty($invoice['posData']['item_id']) ? $invoice['posData']['item_id'] : '';
+		$amount = $invoice['price'];
+		$currency = $invoice['currency'];
 		$processorModel = $this->getModelFromCache('bdPaygate_Model_Processor');
 		
 		$log = $processorModel->getLogByTransactionId($transactionId);
