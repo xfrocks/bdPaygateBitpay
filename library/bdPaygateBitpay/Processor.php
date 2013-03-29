@@ -69,15 +69,17 @@ class bdPaygateBitpay_Processor extends bdPaygate_Processor_Abstract
 			return false;
 		}
 		
-		$transactionId = (!empty($invoice['id']) ? ('bitpay_' . md5($invoice['id'] . $invoice['status'])) : '');
+		$transactionId = (!empty($invoice['id']) ? ('bitpay_' . md5($invoice['id'])) : '');
 		$paymentStatus = bdPaygate_Processor_Abstract::PAYMENT_STATUS_OTHER;
 		$transactionDetails = array_merge(array('rawData' => $data), $invoice);
 		$itemId = !empty($invoice['posData']['item_id']) ? $invoice['posData']['item_id'] : '';
 		$processorModel = $this->getModelFromCache('bdPaygate_Model_Processor');
 		
 		$log = $processorModel->getLogByTransactionId($transactionId);
-		if (!empty($log))
+		if (!empty($log) AND $log['log_type'] == bdPaygate_Processor_Abstract::PAYMENT_STATUS_ACCEPTED)
 		{
+			// perform additional check for log_type because BitPay may send us 2 notifications
+			// one for confirmed status and another for complete status
 			$this->_setError("Transaction {$transactionId} has already been processed");
 			return false;
 		}
