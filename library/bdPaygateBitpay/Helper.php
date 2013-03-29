@@ -27,8 +27,24 @@ class bdPaygateBitpay_Helper
 
 		return $response['url'];
 	}
+	
+	public static function getInvoice($apiKeyId, $invoiceId)
+	{
+		$response = self::request('https://bitpay.com/api/invoice/'.$invoiceId, $apiKeyId);
+		
+		if (empty($response) OR !is_array($response) OR empty($response['posData']))
+		{
+			return false;
+		}
+		
+		$response['posData'] = @json_decode($response['posData'], true);
+		if (empty($response['posData'])) $response['posData'] = array();
+		
+		return $response;	
+	}
 
-	private static function request($url, $apiKey, $post = false) {
+	private static function request($url, $apiKey, $post = false)
+	{
 		$curl = curl_init($url);
 		$length = 0;
 		if ($post)
@@ -57,10 +73,14 @@ class bdPaygateBitpay_Helper
 
 		$responseString = curl_exec($curl);
 
-		if($responseString == false) {
+		if ($responseString == false)
+		{
 			$response = curl_error($curl);
-		} else {
-			$response = json_decode($responseString, true);
+		}
+		else
+		{
+			$response = @json_decode($responseString, true);
+			if (empty($response)) $response = arary();
 		}
 
 		curl_close($curl);

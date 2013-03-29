@@ -2,7 +2,7 @@
 class bdPaygateBitpay_DevHelper_Config extends DevHelper_Config_Base {
 	protected $_dataClasses = array();
 	protected $_dataPatches = array();
-	protected $_exportPath = '/home/sondh011/working/bdPaygateBitpay';
+	protected $_exportPath = '/Users/sondh/Dropbox/XenForo/bdPaygate/MORE/bdPaygateBitpay/';
 	protected $_exportIncludes = array();
 	
 	/**
